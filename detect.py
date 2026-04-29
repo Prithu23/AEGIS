@@ -2,10 +2,12 @@ from ultralytics import YOLO
 import cv2
 
 model = YOLO("yolov8n.pt")
+model.fuse()
 cap = cv2.VideoCapture("http://192.168.1.33:81/stream")
 
 while True:
     ret, frame = cap.read()
+    frame = cv2.resize(frame, (320, 240))
     if not ret:
         break
     result = model(frame, verbose=False)
