@@ -5,8 +5,8 @@ import numpy as np
 
 model = hub.load("https://tfhub.dev/google/yamnet/1")
 
-map = tf.io.read_file(model.class_map_path().numpy())
-names = [line.split(",")[2] for line in map.numpy().decode().strip().split("\n")[1:]]
+class_map = tf.io.read_file(model.class_map_path().numpy())
+names = [line.split(",")[2] for line in class_map.numpy().decode().strip().split("\n")[1:]]
 print("AEGIS Active. Fluttering for noises....")
 
 while True:
