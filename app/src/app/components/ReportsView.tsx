@@ -1,7 +1,11 @@
 import { FileText, Download, Clock, MapPin, AlertTriangle } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState } from 'react';
+import jsPDF from 'jspdf';
 
 export default function ReportsView() {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const reports = [
     {
       id: 'RPT-001',
@@ -41,6 +45,80 @@ export default function ReportsView() {
     rubbleCount: 12,
     gasSpill: 'Detected - MQ2: 35%',
     severity: 'High',
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true);
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      // Title
+      pdf.setFontSize(24);
+      pdf.setTextColor(6, 182, 212); // Cyan
+      pdf.text('AEGIS EMERGENCY REPORT', 20, 20);
+
+      // Report metadata
+      pdf.setFontSize(10);
+      pdf.setTextColor(255, 255, 255); // White
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, 20, 35);
+
+      // Section: Location
+      pdf.setFontSize(14);
+      pdf.setTextColor(6, 182, 212); // Cyan
+      pdf.text('LOCATION INFORMATION', 20, 50);
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(255, 255, 255); // White
+      pdf.text(`Latitude: ${downloadableReport.latitude}`, 20, 60);
+      pdf.text(`Longitude: ${downloadableReport.longitude}`, 20, 68);
+
+      // Section: Severity
+      pdf.setFontSize(14);
+      pdf.setTextColor(6, 182, 212); // Cyan
+      pdf.text('SEVERITY ASSESSMENT', 20, 85);
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(239, 68, 68); // Red
+      pdf.text(`Severity Level: ${downloadableReport.severity}`, 20, 95);
+
+      // Section: Detection Results
+      pdf.setFontSize(14);
+      pdf.setTextColor(6, 182, 212); // Cyan
+      pdf.text('DETECTION RESULTS', 20, 112);
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(255, 255, 255); // White
+      pdf.text(`Human Count: ${downloadableReport.humanCount} individuals detected`, 20, 122);
+      pdf.text(`Rubble Objects: ${downloadableReport.rubbleCount} objects identified`, 20, 130);
+      pdf.text(`Gas Analysis: ${downloadableReport.gasSpill}`, 20, 138);
+
+      // Section: Report Details
+      pdf.setFontSize(14);
+      pdf.setTextColor(6, 182, 212); // Cyan
+      pdf.text('REPORT DETAILS', 20, 155);
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(255, 255, 255); // White
+      pdf.text(`Date & Time: ${downloadableReport.date} at ${downloadableReport.time}`, 20, 165);
+
+      // Footer
+      pdf.setFontSize(9);
+      pdf.setTextColor(128, 128, 128); // Gray
+      pdf.text('VERDE Emergency Response System - AEGIS Platform', 20, 280);
+      pdf.text(`Page 1 of 1`, 180, 280);
+
+      // Download
+      pdf.save(`AEGIS-Emergency-Report-${new Date().getTime()}.pdf`);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -93,9 +171,13 @@ export default function ReportsView() {
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-cyan-400 tracking-wide">Download Report</h2>
-          <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-medium flex items-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+          <button 
+            onClick={handleDownloadPDF}
+            disabled={isDownloading}
+            className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-medium flex items-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Download className="w-5 h-5" />
-            Download PDF
+            {isDownloading ? 'Downloading...' : 'Download PDF'}
           </button>
         </div>
 

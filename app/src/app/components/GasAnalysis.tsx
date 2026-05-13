@@ -5,7 +5,6 @@ export default function GasAnalysis() {
   const data = [
     { name: 'MQ2 - Flammable', value: 35, color: '#ef4444' },
     { name: 'MQ4 - Methane', value: 28, color: '#06b6d4' },
-    { name: 'MQ135 - Air Quality', value: 37, color: '#0891b2' },
   ];
 
   const CustomTooltip = ({ active, payload }: any) => {
